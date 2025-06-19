@@ -5,11 +5,22 @@
 #include "RootSignature.h"
 #include "PipelineState.h"
 #include "VertexBuffer.h"
+#include "IndexBuffer.h"
 
 using namespace KamataEngine;
 
 
 void SetupPipelineState(PipelineState& pipelineState,RootSignature& rs,Shader& vs,Shader& ps);
+
+struct VertexData {
+	Vector4 position;
+};
+VertexData vertices[] = {
+    {0.0f,  0.5f,  0.0f, 1.0f},
+    {0.5f,  -0.5f, 0.0f, 1.0f},
+    {-0.5f, -0.5f, 0.0f, 1.0f},
+};
+uint16_t indices[] = {0, 1, 2};
 
 // Windowsアプリでのエントリーポイント(main関数)
 int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
@@ -41,14 +52,22 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 	VertexBuffer vb;
 
-	vb.Create(sizeof(Vector4) * 3, sizeof(Vector4));
+	vb.Create(sizeof(vertices) * 3, sizeof(vertices[0]));
 
-	Vector4* vertexData = nullptr;
-
-	vb.Get()->Map(0, nullptr, reinterpret_cast<void**>(&vertexData));
-	vertexData[0] = {-0.5f, -0.5f, 0.0f, 1.0f};
-	vertexData[1] = {0.0f, 0.5f, 0.0f, 1.0f};
-	vertexData[2] = {0.5f, -0.5f, 0.0f, 1.0f};
+	IndexBuffer ib;
+	ib.Create(sizeof(indices), sizeof(indices[0]));
+	
+	uint16_t* pGpuindex = nullptr;
+	ib.Get()->Map(0, nullptr, reinterpret_cast<void**>(&pGpuindex));
+	for (int i = 0; i < _countof(vertices); ++i) {
+		pGpuindex[i] = indices[i];
+	}
+	
+	VertexData* pGpuVertices = nullptr;
+	vb.Get()->Map(0, nullptr, reinterpret_cast<void**>(&pGpuVertices));
+	for (int i = 0; i < _countof(vertices); ++i) {
+		pGpuVertices[i] = vertices[i];
+	}
 
 	D3D12_VIEWPORT viewport{};
 
@@ -78,10 +97,11 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 		commandList->SetGraphicsRootSignature(rs.Get());
 		commandList->SetPipelineState(pipelinestate.Get());
 		commandList->IASetVertexBuffers(0, 1, vb.GetView());
+		commandList->IASetIndexBuffer(ib.GetView());
 		commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
 
-		commandList->DrawInstanced(3, 1, 0, 0);
-
+		//commandList->DrawInstanced(3, 1, 0, 0);
+		commandList->DrawIndexedInstanced(_countof(indices), 1, 0, 0, 0);
 		dxCommon->PostDraw();
 	}
 	
