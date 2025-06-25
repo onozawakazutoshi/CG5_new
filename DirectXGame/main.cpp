@@ -16,9 +16,9 @@ struct VertexData {
 	Vector4 position;
 };
 VertexData vertices[] = {
-    {0.0f,  0.5f,  0.0f, 1.0f},
-    {0.5f,  -0.5f, 0.0f, 1.0f},
-    {-0.5f, -0.5f, 0.0f, 1.0f},
+    {-1.0f,  1.0f,  0.0f, 1.0f},
+    {3.0f,  1.0f, 0.0f, 1.0f},
+    {-1.0f, -3.0f, 0.0f, 1.0f},
 };
 uint16_t indices[] = {0, 1, 2};
 
@@ -59,7 +59,7 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 	
 	uint16_t* pGpuindex = nullptr;
 	ib.Get()->Map(0, nullptr, reinterpret_cast<void**>(&pGpuindex));
-	for (int i = 0; i < _countof(vertices); ++i) {
+	for (int i = 0; i < _countof(indices); ++i) {
 		pGpuindex[i] = indices[i];
 	}
 	
