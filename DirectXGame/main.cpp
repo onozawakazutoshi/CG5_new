@@ -14,12 +14,13 @@ void SetupPipelineState(PipelineState& pipelineState,RootSignature& rs,Shader& v
 
 struct VertexData {
 	Vector4 position;
+	Vector2 texcoord;
 };
 VertexData vertices[] = {
-    {0.0f,  0.5f,  0.0f, 1.0f},
-    {0.5f,  -0.5f, 0.0f, 1.0f},
-    {-0.5f, -0.5f, 0.0f, 1.0f},
-};
+    {{0.0f, 0.5f, 0.0f, 1.0f}, {10,10}},
+    {{0.5f, -0.5f, 0.0f, 1.0f},{10,10}},
+    {{-0.5f, -0.5f, 0.0f, 1.0f}, {10,10}}
+    };
 uint16_t indices[] = {0, 1, 2};
 
 // Windowsアプリでのエントリーポイント(main関数)
@@ -111,11 +112,16 @@ int WINAPI WinMain(_In_ HINSTANCE, _In_opt_ HINSTANCE, _In_ LPSTR, _In_ int) {
 
 void SetupPipelineState(PipelineState& pipelineState, RootSignature& rs, Shader& vs, Shader& ps) 
 {
-	D3D12_INPUT_ELEMENT_DESC inputElementDesc[1] = {};
+	D3D12_INPUT_ELEMENT_DESC inputElementDesc[2] = {};
 	inputElementDesc[0].SemanticName = "POSITION";
 	inputElementDesc[0].SemanticIndex = 0;
 	inputElementDesc[0].Format = DXGI_FORMAT_R32G32B32A32_FLOAT;
 	inputElementDesc[0].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	inputElementDesc[1].SemanticName = "TEXCOORD";
+	inputElementDesc[1].SemanticIndex = 0;
+	inputElementDesc[1].Format = DXGI_FORMAT_R32G32_FLOAT;
+	inputElementDesc[1].AlignedByteOffset = D3D12_APPEND_ALIGNED_ELEMENT;
+	
 	D3D12_INPUT_LAYOUT_DESC inputLayoutDesc{};
 	inputLayoutDesc.pInputElementDescs = inputElementDesc;
 	inputLayoutDesc.NumElements = _countof(inputElementDesc);
