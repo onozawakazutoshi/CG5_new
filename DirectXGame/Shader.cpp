@@ -38,7 +38,7 @@ void Shader::LoadDxc(const std::wstring& filePath, const std::wstring& shaderMod
 		hr = DxcCreateInstance(CLSID_DxcCompiler, IID_PPV_ARGS(&dxcCompiler));
 		assert(SUCCEEDED(hr));
 	}
-	if (dxcUtils == nullptr) {
+	if (includeHandler == nullptr) {
 		hr = dxcUtils->CreateDefaultIncludeHandler(&includeHandler);
 		assert(SUCCEEDED(hr));
 	}
